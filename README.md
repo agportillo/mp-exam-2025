@@ -36,6 +36,8 @@
         script: |
           tree $(System.DefaultWorkingDirectory)
   ```
+  <img width="1396" height="855" alt="image" src="https://github.com/user-attachments/assets/c2386adb-e055-46dd-b15f-2a97f653ac57" />
+
 - Tarea tipo Bash donde se guarda de forma inicial la imagen en el repositorio donde se ejecuta la tarea de Azure DevOps, acá la imagen se almacena de forma temporal como .tar
   ```
   - task: Bash@3
@@ -46,6 +48,8 @@
           docker save -o $(System.DefaultWorkingDirectory)/$(imageName).tar $(imageName):$(latestTag)
           tree $(System.DefaultWorkingDirectory)
   ```
+  <img width="1172" height="661" alt="image" src="https://github.com/user-attachments/assets/1910fb6d-a4ca-4a9c-9c2d-876336de5390" />
+
 - Luego se ejecuta una siguiente tarea tipo Bash, en donde se evalúa si la imagen construída ya existe en Openshift, de lo contrario, se ejecutan las sentencias skopeo para tomar el .tar y enviarlo al Podman Registry. Seguidamente, se realiza el proceso de logueo en Harbor y se ejecuta otra sentencia skopeo para tomar la imagen del Podman Registry y nuevamente enviarla a Harbor. También se toma la imagen del Podman Registry para luego enviarla con skopeo a Openshift, para finalmente eliminar el .tar
   ```
   - task: Bash@3
@@ -80,8 +84,26 @@
           echo "Eliminando .tar"
           rm $(System.DefaultWorkingDirectory)/$(imageName).tar
   ```
+- <img width="1493" height="830" alt="image" src="https://github.com/user-attachments/assets/34e7d4d3-aa60-4a2e-8620-86a2c4fb19ae" />
 - <img width="1707" height="497" alt="image" src="https://github.com/user-attachments/assets/9da70fb3-2f35-46bb-8c3b-c98fca739250" />
 - <img width="1083" height="287" alt="image" src="https://github.com/user-attachments/assets/8a06bbbe-90df-44d7-bc5d-f80c1bd30d3c" />
+- <img width="1605" height="126" alt="image" src="https://github.com/user-attachments/assets/61b580aa-63cb-4c25-ad52-43354e0ef591" />
+
+<br/> 
+- Para finalizar, a travez de la última tarea del pipeline, se ejecutan las instrucciones para realizar la instalación de los componentes en Openshift: Configmap, route, svc, deployment. Los cuales se encuentran detallados dentro del archivo openshift-objects.yml
+```
+- task: Bash@3
+      displayName: Apply Deployment
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -x
+          tree $(System.DefaultWorkingDirectory)
+          oc apply -f $(System.DefaultWorkingDirectory)/openshift-objects.yml -n web-mp-dev
+
+          oc rollout restart deployment/$(imageName) -n web-mp-dev
+```
+- <img width="1493" height="830" alt="image" src="https://github.com/user-attachments/assets/1d0ac014-8492-4f59-a659-f46aedd45222" />
 
 ```
 trigger:

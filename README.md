@@ -89,7 +89,6 @@
 - <img width="1083" height="287" alt="image" src="https://github.com/user-attachments/assets/8a06bbbe-90df-44d7-bc5d-f80c1bd30d3c" />
 - <img width="1605" height="126" alt="image" src="https://github.com/user-attachments/assets/61b580aa-63cb-4c25-ad52-43354e0ef591" />
 
-<br/> 
 - Para finalizar, a travez de la última tarea del pipeline, se ejecutan las instrucciones para realizar la instalación de los componentes en Openshift: Configmap, route, svc, deployment. Los cuales se encuentran detallados dentro del archivo openshift-objects.yml
 ```
 - task: Bash@3

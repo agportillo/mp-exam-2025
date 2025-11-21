@@ -12,4 +12,7 @@
   A continuación, el estado del agente de Azure en Pop-OS:
 <img width="1040" height="227" alt="image" src="https://github.com/user-attachments/assets/27a593d1-7e54-4d41-99f9-a54cf5a9138d" />
   En Azure DevOps se utiliza el proyecto: boards project y a continuación se muestra el conjunto de repositorios
-  <img width="691" height="391" alt="image" src="https://github.com/user-attachments/assets/3426ec6a-e9e1-4ca4-9a61-70468c93265b" />
+<img width="691" height="391" alt="image" src="https://github.com/user-attachments/assets/3426ec6a-e9e1-4ca4-9a61-70468c93265b" />
+  <br/>Así como también se construye 1 pipeline para cada repositorio:
+<img width="1710" height="427" alt="image" src="https://github.com/user-attachments/assets/d637ef6c-9ed2-4430-a771-7b8a89c23e60" />
+  

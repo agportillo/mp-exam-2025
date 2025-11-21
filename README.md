@@ -18,4 +18,8 @@
   Evaluando la arquitectura en Openshift, se puede apreciar la creación de los dos namespaces utilizados para el ejercicio:
 - <img width="656" height="55" alt="image" src="https://github.com/user-attachments/assets/1064036c-dc7e-49ce-831d-22b5ace83297" />
 - <img width="1472" height="152" alt="image" src="https://github.com/user-attachments/assets/f090b0cd-dc12-4a92-9e89-f8b5958a5eae" />
+  Igualmente se utiliza el namespace mp-argo-cd para la instalación de los componentes de ArgoCD:
+- <img width="1461" height="412" alt="image" src="https://github.com/user-attachments/assets/118b2ca6-05c2-4a0d-9c67-8dcccafd11f9" />
+- <img width="1167" height="692" alt="image" src="https://github.com/user-attachments/assets/d2a214a4-fda5-4ce1-8fb2-72d9f02af7c2" />
+- <img width="797" height="197" alt="image" src="https://github.com/user-attachments/assets/db3c1b88-8d09-4a69-85a7-6cf147321854" />
 

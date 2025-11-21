@@ -8,7 +8,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Configuración CORS más específica
+// Configuración CORS para desarrollo
 const corsOptions = {
   origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -19,6 +19,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(helmet());
 app.use(express.json());
+
+// Middleware de logging para debugging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
 
 // Datos de servicios clave
 const serviciosClave = [
@@ -72,7 +78,7 @@ const infoMinisterio = {
   ]
 };
 
-// Rutas de la API
+// Rutas de la API - CORREGIDAS
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
@@ -96,7 +102,8 @@ app.get('/api/informacion-institucional', (req, res) => {
   });
 });
 
-app.get('/api/servicios-clave/:id', (req, res) => {
+// Ruta corregida para servicio individual - SIN parámetros problemáticos
+app.get('/api/servicios-clave/detalle/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const servicio = serviciosClave.find(s => s.id === id);
   
@@ -113,12 +120,26 @@ app.get('/api/servicios-clave/:id', (req, res) => {
   });
 });
 
+// Ruta de bienvenida
+app.get('/', (req, res) => {
+  res.json({
+    message: 'API del Ministerio Público de Guatemala',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      servicios: '/api/servicios-clave',
+      informacion: '/api/informacion-institucional'
+    }
+  });
+});
+
 // Manejo de errores
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('Error:', err.stack);
   res.status(500).json({
     success: false,
-    message: 'Error interno del servidor'
+    message: 'Error interno del servidor',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
 });
 
@@ -136,4 +157,5 @@ app.listen(PORT, () => {
   console.log(`   GET /api/health`);
   console.log(`   GET /api/servicios-clave`);
   console.log(`   GET /api/informacion-institucional`);
+  console.log(`   GET /api/servicios-clave/detalle/:id`);
 });

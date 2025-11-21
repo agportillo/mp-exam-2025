@@ -1,0 +1,80 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- web-mp-dev
+
+pool:
+  name: Pop!OS-Agent
+
+variables:
+  imageName: 'mp-backend'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  latestTag: '1.0.0'
+
+stages:
+- stage: Build
+  displayName: Build Docker Image
+  jobs:  
+  - job: Build
+    displayName: Build
+    steps:
+    - task: Docker@2
+      displayName: Build Docker Image With PopOS
+      inputs:
+        command: build
+        repository: $(imageName)
+        dockerfile: $(dockerfilePath)
+        tags: $(latestTag)
+        script: |
+          tree $(System.DefaultWorkingDirectory)
+    - task: Bash@3
+      displayName: Save Docker Image to Local File
+      inputs:
+        targetType: 'inline'
+        script: |
+          docker save -o $(System.DefaultWorkingDirectory)/$(imageName).tar $(imageName):$(latestTag)
+          tree $(System.DefaultWorkingDirectory)
+    - task: Bash@3
+      displayName: Send Docker Image to Different Registries
+      inputs:
+        targetType: 'inline'
+        script: |
+          tree $(System.DefaultWorkingDirectory)
+          set -x
+
+          string=$(oc describe istag/$(imageName):$(latestTag) -n openshift);
+          EXIT_STATUS=$?
+
+          if [ "$EXIT_STATUS" -eq "0" ]; then
+            echo "$string";
+          else
+            # Se envía la imagen de .tar hacía PODMAN REGISTRY LOCAL
+            echo "Enviando la imagen de .tar hacía PODMAN REGISTRY"
+            skopeo copy --dest-no-creds --dest-tls-verify=false docker-archive:$(System.DefaultWorkingDirectory)/$(imageName).tar docker://localhost:4000/common-services/$(imageName):$(latestTag)
+            
+            # Se logea skopea para luego enviar la imagen del podman registry hacía HARBOR
+            echo "Enviando la imagen de PODMAN REGISTRY hacía HARBOR"
+            echo $(pass_root) | sudo -S skopeo login aportillo.local.com -u admin -p $(pass_harbor)
+            echo $(pass_root) | sudo -S skopeo copy --src-no-creds --src-tls-verify=false docker://localhost:4000/common-services/$(imageName):$(latestTag) docker://aportillo.local.com/common-services/$(imageName):$(latestTag)
+
+            # Se envía la imagen de podman registry hacía OPENSHIFT
+            echo "Enviando la imagen de PODMAN REGISTRY hacía OPENSHIFT"
+            skopeo copy --src-no-creds --src-tls-verify=false --dest-tls-verify=false --dest-creds=developer:$(oc whoami -t) docker://localhost:4000/common-services/$(imageName):$(latestTag) docker://default-route-openshift-image-registry.apps-crc.testing/openshift/$(imageName):$(latestTag)
+          fi
+
+          # Se elimina el .tar
+          echo "Eliminando .tar"
+          rm $(System.DefaultWorkingDirectory)/$(imageName).tar
+    - task: Bash@3
+      displayName: Apply Deployment
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -x
+          tree $(System.DefaultWorkingDirectory)
+          oc apply -f $(System.DefaultWorkingDirectory)/openshift-objects.yml -n web-mp-dev
+
+          oc rollout restart deployment/$(imageName) -n web-mp-dev

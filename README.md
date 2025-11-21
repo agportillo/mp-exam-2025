@@ -15,4 +15,7 @@
 <img width="691" height="391" alt="image" src="https://github.com/user-attachments/assets/3426ec6a-e9e1-4ca4-9a61-70468c93265b" />
   <br/>Así como también se construye 1 pipeline para cada repositorio:
 <img width="1710" height="427" alt="image" src="https://github.com/user-attachments/assets/d637ef6c-9ed2-4430-a771-7b8a89c23e60" />
-  
+  Evaluando la arquitectura en Openshift, se puede apreciar la creación de los dos namespaces utilizados para el ejercicio:
+- <img width="656" height="55" alt="image" src="https://github.com/user-attachments/assets/1064036c-dc7e-49ce-831d-22b5ace83297" />
+- <img width="1472" height="152" alt="image" src="https://github.com/user-attachments/assets/f090b0cd-dc12-4a92-9e89-f8b5958a5eae" />
+
